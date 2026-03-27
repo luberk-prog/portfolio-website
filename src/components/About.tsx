@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { getAssetPath } from "@/utils/paths";
 
 export const About = () => {
   return (
@@ -16,7 +17,7 @@ export const About = () => {
         <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
         <div className="relative aspect-square rounded-2xl overflow-hidden glass">
           <Image
-            src="/profile_original.jpg"
+            src={getAssetPath("/profile_original.jpg")}
             alt="Emmanuel Amoh-Dawo"
             fill
             className="object-cover scale-105 hover:scale-110 transition-all duration-500"

@@ -5,6 +5,7 @@ import { ArrowLeft, Github, ExternalLink, Code2, Layers } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Project } from "@/data/projects";
 import Image from "next/image";
+import { getAssetPath } from "@/utils/paths";
 
 export const ProjectDetailClient = ({ project }: { project: Project }) => {
   const router = useRouter();
@@ -29,7 +30,7 @@ export const ProjectDetailClient = ({ project }: { project: Project }) => {
             className="rounded-3xl overflow-hidden glass aspect-video relative"
           >
             <Image 
-              src={project.image} 
+              src={getAssetPath(project.image)} 
               alt={project.title} 
               fill
               className="object-cover"

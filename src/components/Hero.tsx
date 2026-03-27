@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
+import { getAssetPath } from "@/utils/paths";
 
 export const Hero = () => {
   return (
@@ -21,7 +22,7 @@ export const Hero = () => {
           <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-40 animate-pulse"></div>
           <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white/10 glass">
             <Image 
-              src="/profile_original.jpg" 
+              src={getAssetPath("/profile_original.jpg")} 
               alt="Emmanuel Amoh-Dawo" 
               fill
               className="object-cover scale-110"

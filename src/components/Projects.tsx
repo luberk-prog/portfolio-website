@@ -5,6 +5,7 @@ import { Github, ExternalLink, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { getAssetPath } from "@/utils/paths";
 
 export const Projects = () => {
   return (
@@ -20,7 +21,7 @@ export const Projects = () => {
         >
           <div className="aspect-video relative overflow-hidden">
             <Image
-              src={project.image}
+              src={getAssetPath(project.image)}
               alt={project.title}
               fill
               className={`object-cover transition-transform duration-500 group-hover:scale-110 ${project.underConstruction ? 'blur-sm grayscale' : 'grayscale group-hover:grayscale-0'}`}
