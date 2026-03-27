@@ -8,6 +8,18 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "joi": "^17.12.1",
+    "mongoose": "^8.1.1",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.9"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
