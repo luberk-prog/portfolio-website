@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Github, ExternalLink, Code2, Layers } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Project } from "@/data/projects";
+import Image from "next/image";
 
 export const ProjectDetailClient = ({ project }: { project: Project }) => {
   const router = useRouter();
@@ -27,10 +28,11 @@ export const ProjectDetailClient = ({ project }: { project: Project }) => {
             animate={{ opacity: 1, scale: 1 }}
             className="rounded-3xl overflow-hidden glass aspect-video relative"
           >
-            <img 
+            <Image 
               src={project.image} 
               alt={project.title} 
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </motion.div>
 

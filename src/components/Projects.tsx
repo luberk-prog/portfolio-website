@@ -4,6 +4,7 @@ import { projects } from "@/data/projects";
 import { Github, ExternalLink, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export const Projects = () => {
   return (
@@ -18,10 +19,11 @@ export const Projects = () => {
           className="group relative glass rounded-3xl overflow-hidden"
         >
           <div className="aspect-video relative overflow-hidden">
-            <img
+            <Image
               src={project.image}
               alt={project.title}
-              className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${project.underConstruction ? 'blur-sm grayscale' : 'grayscale group-hover:grayscale-0'}`}
+              fill
+              className={`object-cover transition-transform duration-500 group-hover:scale-110 ${project.underConstruction ? 'blur-sm grayscale' : 'grayscale group-hover:grayscale-0'}`}
             />
             {project.underConstruction ? (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6 text-center">
