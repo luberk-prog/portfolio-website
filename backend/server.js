@@ -15,23 +15,19 @@ connectDB();
 
 const app = express();
 
-// CORS must come BEFORE helmet so headers are set correctly
-const corsOptions = {
-  origin: [
-    'https://luberk-prog.github.io',
-    'http://localhost:3000',
-    'http://localhost:3001',
-  ],
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
-app.use(cors(corsOptions));
+// Handle CORS preflight for ALL routes first
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(200);
+});
 
-// Security Headers (configured to allow cross-origin resource sharing)
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
-}));
+// CORS — allow all origins (public portfolio API, no sensitive data)
+app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
+
+// Security Headers
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Body Parser
 app.use(express.json());
