@@ -2,23 +2,33 @@
 
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Phone, Loader2, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export const Contact = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [slowHint, setSlowHint] = useState(false);
+  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
     setErrorMessage("");
+    setSlowHint(false);
+
+    // Show a "waking up" hint after 5 seconds (Render free tier cold start)
+    slowTimer.current = setTimeout(() => setSlowHint(true), 5000);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
     try {
       const response = await fetch("https://portfolio-website-2cd8.onrender.com/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
+        signal: controller.signal,
       });
 
       const data = await response.json();
@@ -30,9 +40,16 @@ export const Contact = () => {
         throw new Error(data.message || "Something went wrong. Please try again.");
       }
     } catch (err: any) {
-      console.error("Submission Error:", err);
+      if (err.name === "AbortError") {
+        setErrorMessage("Request timed out. The server may be waking up — please try again in a moment.");
+      } else {
+        setErrorMessage(err.message || "Failed to send message. Please check your connection.");
+      }
       setStatus("error");
-      setErrorMessage(err.message || "Failed to send message. Please check your connection.");
+    } finally {
+      clearTimeout(timeoutId);
+      if (slowTimer.current) clearTimeout(slowTimer.current);
+      setSlowHint(false);
     }
   };
 
@@ -147,6 +164,12 @@ export const Contact = () => {
           <p className="text-red-500 text-sm pl-2">{errorMessage}</p>
         )}
 
+        {status === "loading" && slowHint && (
+          <p className="text-yellow-400/80 text-sm pl-2 animate-pulse">
+            ⏳ Still connecting... The server is waking up from sleep. Please wait.
+          </p>
+        )}
+
         <button
           type="submit"
           disabled={status === "loading"}
@@ -154,7 +177,7 @@ export const Contact = () => {
         >
           {status === "loading" ? (
             <>
-              Sending...
+              {slowHint ? "Waking server..." : "Sending..."}
               <Loader2 size={18} className="animate-spin" />
             </>
           ) : (
