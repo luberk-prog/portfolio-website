@@ -15,9 +15,23 @@ connectDB();
 
 const app = express();
 
-// Security Middleware
-app.use(helmet());
-app.use(cors()); // Configure for specific origin in production if needed
+// CORS must come BEFORE helmet so headers are set correctly
+const corsOptions = {
+  origin: [
+    'https://luberk-prog.github.io',
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+// Security Headers (configured to allow cross-origin resource sharing)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 
 // Body Parser
 app.use(express.json());
