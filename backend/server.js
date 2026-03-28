@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const nodemailer = require('nodemailer');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
 
@@ -15,18 +16,18 @@ connectDB();
 
 const app = express();
 
-// Handle CORS preflight for ALL routes first
-app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.sendStatus(200);
-});
+// CORS — open for all origins (public portfolio API)
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+  })
+);
 
-// CORS — allow all origins (public portfolio API, no sensitive data)
-app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
+// Handle preflight requests
+app.options('*', cors());
 
-// Security Headers
+// Security Headers (crossOriginResourcePolicy disabled for cross-origin API)
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Body Parser
@@ -39,15 +40,56 @@ if (process.env.NODE_ENV === 'development') {
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 app.use('/api/', limiter);
 
-// Routes
+// Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+// Contact Route (inline for reliability)
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  try {
+    // Save to DB
+    const Contact = require('./models/Contact');
+    await Contact.create({ name, email, message });
+
+    // Send email
+    await transporter.sendMail({
+      from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_TO,
+      subject: `New message from ${name}`,
+      html: `
+        <h3>New Contact Message</h3>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong> ${message}</p>
+      `,
+    });
+
+    res.status(200).json({ message: 'Message sent successfully' });
+  } catch (error) {
+    console.error('Contact error:', error);
+    res.status(500).json({ message: 'Failed to send message', error: error.message });
+  }
+});
+
+// Other Routes
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/skills', require('./routes/skillRoutes'));
-app.use('/api/contact', require('./routes/contactRoutes'));
 
 // Root Route
 app.get('/', (req, res) => {

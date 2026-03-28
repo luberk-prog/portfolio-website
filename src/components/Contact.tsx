@@ -2,54 +2,44 @@
 
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Phone, Loader2, CheckCircle2 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+
+const API_URL = "https://portfolio-website-2cd8.onrender.com";
 
 export const Contact = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [slowHint, setSlowHint] = useState(false);
-  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
     setErrorMessage("");
-    setSlowHint(false);
-
-    // Show a "waking up" hint after 5 seconds (Render free tier cold start)
-    slowTimer.current = setTimeout(() => setSlowHint(true), 5000);
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
     try {
-      const response = await fetch("https://portfolio-website-2cd8.onrender.com/api/contact", {
+      const res = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, message }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (response.ok) {
+      if (res.ok) {
         setStatus("success");
-        setFormData({ name: "", email: "", message: "" });
+        setName("");
+        setEmail("");
+        setMessage("");
       } else {
-        throw new Error(data.message || "Something went wrong. Please try again.");
+        throw new Error(data.message || "Failed to send message");
       }
     } catch (err: any) {
-      if (err.name === "AbortError") {
-        setErrorMessage("Request timed out. The server may be waking up — please try again in a moment.");
-      } else {
-        setErrorMessage(err.message || "Failed to send message. Please check your connection.");
-      }
       setStatus("error");
-    } finally {
-      clearTimeout(timeoutId);
-      if (slowTimer.current) clearTimeout(slowTimer.current);
-      setSlowHint(false);
+      setErrorMessage(err.message || "Failed to send message. Please try again.");
     }
   };
 
@@ -60,12 +50,15 @@ export const Contact = () => {
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
       >
-        <h3 className="text-3xl font-bold mb-6">Let's build something <br /><span className="gradient-text">extraordinary</span> together.</h3>
+        <h3 className="text-3xl font-bold mb-6">
+          Let's build something <br />
+          <span className="gradient-text">extraordinary</span> together.
+        </h3>
         <p className="text-foreground/60 mb-10 font-geist-mono">
-          Whether you have a question or just want to say hi, my inbox is always open. 
+          Whether you have a question or just want to say hi, my inbox is always open.
           I'm currently looking for new opportunities and would love to hear from you!
         </p>
-        
+
         <div className="space-y-6">
           <div className="flex items-center gap-4">
             <div className="p-3 glass rounded-2xl text-primary"><Mail size={20} /></div>
@@ -103,8 +96,9 @@ export const Contact = () => {
         className="space-y-6 p-8 glass rounded-3xl relative overflow-hidden"
         onSubmit={handleSubmit}
       >
+        {/* Success Overlay */}
         {status === "success" && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="absolute inset-0 z-10 bg-background/90 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6"
@@ -114,7 +108,7 @@ export const Contact = () => {
             </div>
             <h4 className="text-xl font-bold mb-2">Message Sent!</h4>
             <p className="text-foreground/60 mb-6">Thanks for reaching out. I'll get back to you as soon as possible.</p>
-            <button 
+            <button
               type="button"
               onClick={() => setStatus("idle")}
               className="px-6 py-2 glass rounded-xl hover:bg-white/5 transition-colors"
@@ -127,57 +121,52 @@ export const Contact = () => {
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest pl-2">Name</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               placeholder="Your Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-primary transition-colors font-geist-mono"
             />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest pl-2">Email</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               required
               placeholder="Your Email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-primary transition-colors font-geist-mono"
             />
           </div>
         </div>
+
         <div className="space-y-2">
           <label className="text-xs font-bold uppercase tracking-widest pl-2">Message</label>
-          <textarea 
+          <textarea
             rows={5}
             required
             placeholder="Tell me about your project..."
-            value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
             className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-primary transition-colors font-geist-mono resize-none"
           ></textarea>
         </div>
 
         {status === "error" && (
-          <p className="text-red-500 text-sm pl-2">{errorMessage}</p>
-        )}
-
-        {status === "loading" && slowHint && (
-          <p className="text-yellow-400/80 text-sm pl-2 animate-pulse">
-            ⏳ Still connecting... The server is waking up from sleep. Please wait.
-          </p>
+          <p className="text-red-400 text-sm pl-2">{errorMessage}</p>
         )}
 
         <button
           type="submit"
           disabled={status === "loading"}
-          className="w-full py-4 bg-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 bg-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {status === "loading" ? (
             <>
-              {slowHint ? "Waking server..." : "Sending..."}
+              Sending...
               <Loader2 size={18} className="animate-spin" />
             </>
           ) : (
