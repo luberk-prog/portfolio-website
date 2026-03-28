@@ -2,59 +2,33 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
-const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
 const nodemailer = require('nodemailer');
-const connectDB = require('./config/db');
-const { errorHandler } = require('./middleware/errorMiddleware');
 
 // Load environment variables
 dotenv.config();
 
-// Connect to Database
-connectDB();
-
 const app = express();
 
-// CORS — open for all origins (public portfolio API)
-app.use(
-  cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'OPTIONS'],
-  })
-);
-
-// Handle preflight requests
+// CORS — open for all origins
+app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
 app.options('*', cors());
 
-// Security Headers (crossOriginResourcePolicy disabled for cross-origin API)
+// Security Headers
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Body Parser
 app.use(express.json());
 
-// Logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
-
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-app.use('/api/', limiter);
-
 // Nodemailer transporter
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE,
+  service: process.env.EMAIL_SERVICE || 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
 
-// Contact Route (inline for reliability)
+// ─── Contact Route ───────────────────────────────────────────────────────────
 app.post('/api/contact', async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -63,14 +37,9 @@ app.post('/api/contact', async (req, res) => {
   }
 
   try {
-    // Save to DB
-    const Contact = require('./models/Contact');
-    await Contact.create({ name, email, message });
-
-    // Send email
     await transporter.sendMail({
       from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_TO,
+      to: process.env.EMAIL_TO || process.env.EMAIL_USER,
       subject: `New message from ${name}`,
       html: `
         <h3>New Contact Message</h3>
@@ -82,25 +51,21 @@ app.post('/api/contact', async (req, res) => {
 
     res.status(200).json({ message: 'Message sent successfully' });
   } catch (error) {
-    console.error('Contact error:', error);
+    console.error('Email error:', error.message);
     res.status(500).json({ message: 'Failed to send message', error: error.message });
   }
 });
 
-// Other Routes
-app.use('/api/projects', require('./routes/projectRoutes'));
-app.use('/api/skills', require('./routes/skillRoutes'));
+// ─── Other Routes ─────────────────────────────────────────────────────────────
+app.get('/api/projects', (req, res) => res.json([]));
+app.get('/api/skills', (req, res) => res.json([]));
 
-// Root Route
+// Root
 app.get('/', (req, res) => {
   res.send('Portfolio API is running...');
 });
 
-// Error Handler
-app.use(errorHandler);
-
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
