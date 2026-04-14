@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Phone, Loader2, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
-const API_URL = "https://portfolio-website-2cd8.onrender.com";
-
 export const Contact = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,15 +17,14 @@ export const Contact = () => {
     setErrorMessage("");
 
     try {
-      const res = await fetch(`${API_URL}/api/contact`, {
+      const res = await fetch(`https://formspree.io/f/{form_id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email: email, message: message }),
       });
-
-      const data = await res.json();
 
       if (res.ok) {
         setStatus("success");
@@ -35,7 +32,8 @@ export const Contact = () => {
         setEmail("");
         setMessage("");
       } else {
-        throw new Error(data.message || "Failed to send message");
+        const data = await res.json();
+        throw new Error(data.error || "Failed to send message");
       }
     } catch (err: any) {
       setStatus("error");
