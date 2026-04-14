@@ -17,7 +17,7 @@ export const Contact = () => {
     setErrorMessage("");
 
     try {
-      const res = await fetch(`https://formspree.io/f/{form_id}`, {
+      const res = await fetch(`https://formspree.io/f/xwvaplbe`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
