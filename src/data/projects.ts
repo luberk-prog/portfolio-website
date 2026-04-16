@@ -11,6 +11,15 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "bigg78-stream",
+    title: "Bigg78 Stream",
+    description: "A high-performance, Netflix-inspired watch-party platform with a focus on cinematic immersion. Features include a glassmorphic profile management system, real-time interactive chat, and a robust custom video player with native fullscreen API integration.",
+    techStack: ["React", "Tailwind CSS", "Framer Motion", "Context API"],
+    githubUrl: "https://github.com/luberk-prog/bigg78_stream",
+    liveUrl: "#",
+    image: "/projects/bigg78-stream.png",
+  },
+  {
     id: "ace-collection",
     title: "Ace Collection",
     description: "A premium streetwear e-commerce platform featuring high-end boutique apparel. Includes unique interactive landing pages, product filtering, and a bespoke shopping experience.",
