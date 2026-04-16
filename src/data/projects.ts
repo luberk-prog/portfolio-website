@@ -16,7 +16,7 @@ export const projects: Project[] = [
     description: "A high-performance, Netflix-inspired watch-party platform with a focus on cinematic immersion. Features include a glassmorphic profile management system, real-time interactive chat, and a robust custom video player with native fullscreen API integration.",
     techStack: ["React", "Tailwind CSS", "Framer Motion", "Context API"],
     githubUrl: "https://github.com/luberk-prog/bigg78_stream",
-    liveUrl: "#",
+    liveUrl: "https://bigg78-stream.onrender.com",
     image: "/projects/bigg78-stream.png",
   },
   {
