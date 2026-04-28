@@ -13,44 +13,41 @@ interface SectionProps {
 
 export const Section = ({ children, id, className, title, subtitle }: SectionProps) => {
   return (
-    <section id={id} className={`py-24 px-6 ${className || ""}`}>
+    <section id={id} className={`py-32 px-6 ${className || ""}`}>
       <div className="max-w-7xl mx-auto">
         {(title || subtitle) && (
-          <div className="mb-16 text-center">
+          <div className="mb-20">
             {title && (
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl md:text-5xl font-bold mb-4"
+                className="flex items-center gap-6 mb-4"
               >
-                {title}
-              </motion.h2>
+                <h2 className="text-4xl md:text-6xl font-serif uppercase tracking-tight text-foreground">
+                  {title}
+                </h2>
+                <div className="flex-grow h-[1px] bg-foreground/10" />
+              </motion.div>
             )}
             {subtitle && (
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-lg text-foreground/60"
+                transition={{ delay: 0.2 }}
+                className="text-lg md:text-xl text-foreground-muted font-sans max-w-2xl"
               >
                 {subtitle}
               </motion.p>
             )}
-            <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              viewport={{ once: true }}
-              className="h-1 bg-primary mx-auto mt-6 rounded-full"
-            />
           </div>
         )}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
           {children}
         </motion.div>

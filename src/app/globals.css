@@ -2,13 +2,13 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-alt: var(--background-alt);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  --color-primary: #8b5cf6;
-  --color-secondary: #3b82f6;
-  --color-accent: #d946ef;
+  --color-foreground-muted: var(--foreground-muted);
+  --color-accent: var(--accent);
+  
+  --font-serif: var(--font-bebas-neue);
+  --font-sans: var(--font-inter);
 
   --animate-reveal: reveal 0.8s ease-out forwards;
   --animate-float: float 3s ease-in-out infinite;
@@ -35,19 +35,25 @@
 }
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --glass-bg: rgba(10, 10, 10, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --background: #1A1A17;
+  --background-alt: #2D2D2A;
+  --accent: #8C5E47;
+  --foreground: #E5E1D8;
+  --foreground-muted: #A8A297;
+  --glass-bg: rgba(26, 26, 23, 0.7);
+  --glass-border: rgba(229, 225, 216, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
 .light {
-  --background: #ffffff;
-  --foreground: #171717;
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --background: #F5F3EF;
+  --background-alt: #E8E4DB;
+  --accent: #8C5E47;
+  --foreground: #2D2D2A;
+  --foreground-muted: #6B6B60;
+  --glass-bg: rgba(245, 243, 239, 0.7);
+  --glass-border: rgba(45, 45, 42, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
 html {
@@ -57,8 +63,13 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-bebas-neue), sans-serif;
+  letter-spacing: 0.02em;
 }
 
 .glass {
@@ -70,13 +81,13 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--foreground) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-bg {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(140, 94, 71, 0.1) 0%, rgba(229, 225, 216, 0.05) 100%);
 }
 
 /* Custom Scrollbar */
